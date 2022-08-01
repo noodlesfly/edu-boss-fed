@@ -3,12 +3,14 @@ import App from './App.vue'
 import router from './router'
 import VueRouter from 'vue-router'
 import ElementUI from '@/plugins/element'
+import Moment from '@/plugins/moment'
 import store from './store'
 
 import '@/styles/index.scss'
 
 Vue.use(ElementUI)
 Vue.use(store.PiniaVuePlugin)
+Vue.use(Moment)
 
 const pinia = store.pinia
 
