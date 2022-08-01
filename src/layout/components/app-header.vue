@@ -36,12 +36,13 @@ import Vue from 'vue'
 import { useUserStore } from '@/store/user'
 import { mapActions } from 'pinia'
 import { getUserInfo, logout } from '@/services/user'
+import type { User } from '@/services/types/user'
 
 export default Vue.extend({
   name: 'AppHeader',
   data () {
     return {
-      user: {}
+      user: {} as User
     }
   },
   methods: {

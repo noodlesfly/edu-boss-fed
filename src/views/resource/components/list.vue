@@ -27,18 +27,14 @@
               placeholder="请选择资源分类"
             >
               <el-option
-                :label="cate.name"
-                :value="cate.id"
-                v-for="(cate, index) in categoryList"
-                :key="index"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit" :disabled="isLoading"
+            <el-button type="primary" :disabled="isLoading"
               >查询</el-button
             >
-            <el-button type="info" plain @click="onReset" :disabled="isLoading"
+            <el-button type="info" plain :disabled="isLoading"
               >重置</el-button
             >
           </el-form-item>
@@ -55,14 +51,13 @@
         <el-table-column prop="description" label="描述"> </el-table-column>
         <el-table-column prop="createdTime" label="添加时间"> </el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row)"
+          <template>
+            <el-button size="mini"
               >编辑</el-button
             >
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.row)"
               >删除</el-button
             >
           </template>
@@ -70,9 +65,6 @@
       </el-table>
 
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="form.current"
         :page-sizes="[5, 10, 20]"
         :page-size="form.size"
         :disabled="isLoading"
@@ -85,8 +77,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { getResourcePages, getAllCategories } from '@/services/resource'
-import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'resource-list',
@@ -106,51 +96,6 @@ export default Vue.extend({
       resourceList: [],
       categoryList: [],
       isLoading: false
-    }
-  },
-  created () {
-    this.fetchResourceList()
-    this.fetchAllCategories()
-  },
-  methods: {
-    onSubmit () {
-      this.form.current = 1
-      this.fetchResourceList()
-    },
-    onReset () {
-      (this.$refs.form as Form).resetFields()
-      this.form.current = 1
-      this.fetchResourceList()
-    },
-    async fetchResourceList () {
-      this.isLoading = true
-      const { data } = await getResourcePages(this.form)
-      if (data.code === '000000') {
-        this.resourceList = data.data.records
-        this.totalCount = data.data.total
-      }
-      this.isLoading = false
-    },
-    handleEdit (row: any) {
-      console.log(row)
-    },
-    handleDelete (row: any) {
-      console.log(row)
-    },
-    handleSizeChange (val: number) {
-      this.form.size = val
-      this.form.current = 1
-      this.fetchResourceList()
-    },
-    handleCurrentChange (val: number) {
-      this.form.current = val
-      this.fetchResourceList()
-    },
-    async fetchAllCategories () {
-      const { data } = await getAllCategories()
-      if (data.code === '000000') {
-        this.categoryList = data.data
-      }
     }
   }
 })

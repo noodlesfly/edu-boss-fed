@@ -36,9 +36,13 @@ function redirectToLogin () {
 
 request.interceptors.response.use(
   function (response) {
-    console.log(response)
     // 对响应数据做点什么
-    return response
+    if (response.data.state === 1 || response.data.code === '000000') {
+      return response
+    } else {
+      Message.error(`${response.data.mesg}`)
+      return Promise.reject(response)
+    }
   },
   async function (error) {
     // 对响应错误做点什么
@@ -103,7 +107,6 @@ request.interceptors.response.use(
     } else {
       Message.error(`${error.Message}`)
     }
-    // console.log('--->', error)
     return Promise.reject(error)
   }
 )

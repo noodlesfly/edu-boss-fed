@@ -6,10 +6,7 @@
           添加菜单
         </el-button>
       </div>
-      <!-- <div v-for="o in 4" :key="o" class="text item">
-        {{ "列表内容 " + o }}
-      </div> -->
-      <el-table :data="menuList" style="width: 100%">
+      <el-table :data="filterAllMenus" style="width: 100%" v-loading="isLoading">
         <el-table-column label="编号" type="index"> </el-table-column>
         <el-table-column prop="name" label="菜单名称" width="180">
         </el-table-column>
@@ -17,16 +14,9 @@
         <el-table-column prop="icon" label="前端图标"> </el-table-column>
         <el-table-column prop="orderNum" label="排序"> </el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row)"
-              >编辑</el-button
-            >
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              >删除</el-button
-            >
+          <template v-slot="scope">
+            <el-button size="mini" @click="handleEdit(scope.row.id)">编辑</el-button>
+            <el-button @click="handleDel(scope.row)" size="mini" type="danger" :loading="scope.row.isDeleting">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -35,43 +25,69 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import { getAllMenus, delMenu } from '@/services/menu'
+import type { menuData } from '@/services/types/menu'
+import Vue from 'vue'
+
+type MenuList = {
+  isDeleting: boolean
+} & menuData
 
 export default Vue.extend({
   name: 'MenuIndex',
   data () {
     return {
-      menuList: []
+      menuList: [] as MenuList[],
+      isDeleting: false,
+      isLoading: false
     }
   },
   created () {
-    this.fetchAllMenus()
+    this.loadAllMenus()
   },
   methods: {
-    async fetchAllMenus () {
-      const { data } = await getAllMenus()
-      if (data.code === '000000') {
-        this.menuList = data.data
+    async loadAllMenus () {
+      try {
+        this.isLoading = true
+        this.menuList = await getAllMenus() as any[]
+        this.menuList.forEach(item => {
+          item.isDeleting = false
+        })
+      } catch (error) {
+
+      } finally {
+        this.isLoading = false
       }
     },
-    handleEdit (row: any) {
+    handleEdit (id: number) {
       this.$router.push({
         name: 'menu-edit',
         params: {
-          id: row.id
+          id: String(id)
         }
       })
     },
-    async handleDelete (row: any) {
-      const { data } = await delMenu(row.id)
-      if (data.code === '000000') {
-        this.$message.success('删除成功！')
-        this.fetchAllMenus()
+    async handleDel (row: MenuList) {
+      try {
+        await this.$confirm('确认删除吗？', '删除提示')
+        row.isDeleting = true
+        await delMenu(row.id as number)
+        this.$message.error('删除成功')
+        this.loadAllMenus()
+      } catch (error) {
+        console.log(error)
+      } finally {
+        row.isDeleting = false
       }
+    }
+  },
+  computed: {
+    filterAllMenus () {
+      return this.menuList.filter(menu => menu.shown)
     }
   }
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

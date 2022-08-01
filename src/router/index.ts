@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import menuRules from './modules/menu'
+import resourceRules from './modules/resource'
 import nprogress from 'nprogress'
 import Layout from '@/layout/index.vue'
 import { useUserStore } from '@/store/user'
@@ -7,7 +9,6 @@ import store from '@/store/index'
 
 Vue.use(VueRouter)
 const userStore = useUserStore(store.pinia)
-console.log(userStore)
 
 const routes: Array<RouteConfig> = [
   {
@@ -30,7 +31,9 @@ const routes: Array<RouteConfig> = [
           title: '',
           ptitle: ''
         }
-      }
+      },
+      ...menuRules,
+      ...resourceRules
       // {
       //   path: '/role',
       //   name: 'role',
@@ -39,28 +42,6 @@ const routes: Array<RouteConfig> = [
       //   meta: {
       //     ptitle: '权限管理',
       //     title: '角色管理'
-      //   }
-      // },
-      // {
-      //   path: '/menu',
-      //   name: 'menu',
-      //   component: () =>
-      //     import(/* webpackChunkName: 'menu' */ '@/views/menu/index.vue'),
-      //   meta: {
-      //     ptitle: '权限管理',
-      //     title: '菜单管理'
-      //   }
-      // },
-      // {
-      //   path: '/resource',
-      //   name: 'resource',
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'resource' */ '@/views/resource/index.vue'
-      //     ),
-      //   meta: {
-      //     ptitle: '权限管理',
-      //     title: '资源管理'
       //   }
       // },
       // {
@@ -104,23 +85,6 @@ const routes: Array<RouteConfig> = [
       //     ptitle: '广告管理',
       //     title: '广告位列表'
       //   }
-      // },
-      // {
-      //   path: '/menu/create',
-      //   name: 'menu-create',
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/menu/create.vue'
-      //     )
-      // },
-      // {
-      //   path: '/menu/edit/:id',
-      //   name: 'menu-edit',
-      //   props: true,
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/menu/edit.vue'
-      //     )
       // },
       // {
       //   path: '/role/alloc-menu/:roleid',
