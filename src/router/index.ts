@@ -1,22 +1,174 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import nprogress from 'nprogress'
+import Layout from '@/layout/index.vue'
+import { useUserStore } from '@/store/user'
+import store from '@/store/index'
 
 Vue.use(VueRouter)
+const userStore = useUserStore(store.pinia)
+console.log(userStore)
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: '/login',
+    name: 'login',
+    component: () =>
+      import(/* webpackChunkName: 'login' */ '@/views/login/index.vue')
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/',
+    component: Layout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '', // 默认子路由
+        name: 'home',
+        component: () =>
+          import(/* webpackChunkName: 'home' */ '@/views/home/index.vue'),
+        meta: {
+          title: '',
+          ptitle: ''
+        }
+      }
+      // {
+      //   path: '/role',
+      //   name: 'role',
+      //   component: () =>
+      //     import(/* webpackChunkName: 'role' */ '@/views/role/index.vue'),
+      //   meta: {
+      //     ptitle: '权限管理',
+      //     title: '角色管理'
+      //   }
+      // },
+      // {
+      //   path: '/menu',
+      //   name: 'menu',
+      //   component: () =>
+      //     import(/* webpackChunkName: 'menu' */ '@/views/menu/index.vue'),
+      //   meta: {
+      //     ptitle: '权限管理',
+      //     title: '菜单管理'
+      //   }
+      // },
+      // {
+      //   path: '/resource',
+      //   name: 'resource',
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'resource' */ '@/views/resource/index.vue'
+      //     ),
+      //   meta: {
+      //     ptitle: '权限管理',
+      //     title: '资源管理'
+      //   }
+      // },
+      // {
+      //   path: '/course',
+      //   name: 'course',
+      //   component: () =>
+      //     import(/* webpackChunkName: 'course' */ '@/views/course/index.vue'),
+      //   meta: {
+      //     ptitle: '',
+      //     title: '课程管理'
+      //   }
+      // },
+      // {
+      //   path: '/user',
+      //   name: 'user',
+      //   component: () =>
+      //     import(/* webpackChunkName: 'user' */ '@/views/user/index.vue'),
+      //   meta: {
+      //     ptitle: '',
+      //     title: '用户管理'
+      //   }
+      // },
+      // {
+      //   path: '/advert',
+      //   name: 'advert',
+      //   component: () =>
+      //     import(/* webpackChunkName: 'advert' */ '@/views/advert/index.vue'),
+      //   meta: {
+      //     ptitle: '广告管理',
+      //     title: '广告列表'
+      //   }
+      // },
+      // {
+      //   path: '/advert-space',
+      //   name: 'advert-space',
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'advert-space' */ '@/views/advert-space/index.vue'
+      //     ),
+      //   meta: {
+      //     ptitle: '广告管理',
+      //     title: '广告位列表'
+      //   }
+      // },
+      // {
+      //   path: '/menu/create',
+      //   name: 'menu-create',
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/menu/create.vue'
+      //     )
+      // },
+      // {
+      //   path: '/menu/edit/:id',
+      //   name: 'menu-edit',
+      //   props: true,
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/menu/edit.vue'
+      //     )
+      // },
+      // {
+      //   path: '/role/alloc-menu/:roleid',
+      //   name: 'alloc-menu',
+      //   props: true,
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/role/alloc-menu.vue'
+      //     )
+      // },
+      // {
+      //   path: '/course/add',
+      //   name: 'course-add',
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'course' */ '@/views/course/components/add.vue'
+      //     )
+      // },
+      // {
+      //   path: '/course/update/:courseId',
+      //   name: 'course-update',
+      //   props: true,
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: 'course' */ '@/views/course/components/update.vue'
+      //     )
+      // },
+      // {
+      //   path: '/course/section/:courseId',
+      //   name: 'course-section',
+      //   props: true,
+      //   component: () =>
+      //     import(/* webpackChunkName: 'course' */ '@/views/course/section.vue')
+      // },
+      // {
+      //   path: '/course/video/:courseId',
+      //   name: 'course-video',
+      //   props: true,
+      //   component: () =>
+      //     import(/* webpackChunkName: 'course' */ '@/views/course/video.vue')
+      // }
+    ]
+  },
+  {
+    path: '*',
+    name: '404',
+    component: () =>
+      import(/* webpackChunkName: '404' */ '@/views/error-page/404.vue')
   }
 ]
 
@@ -24,6 +176,28 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!userStore.user) {
+      next({
+        name: 'login',
+        query: {
+          redirect: to.fullPath
+        }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+  nprogress.start()
+})
+
+router.afterEach(() => {
+  nprogress.done()
 })
 
 export default router
