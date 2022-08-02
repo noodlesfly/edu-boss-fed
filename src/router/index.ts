@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import menuRules from './modules/menu'
 import resourceRules from './modules/resource'
+import roleRules from './modules/role'
 import nprogress from 'nprogress'
 import Layout from '@/layout/index.vue'
 import { useUserStore } from '@/store/user'
@@ -33,17 +34,8 @@ const routes: Array<RouteConfig> = [
         }
       },
       ...menuRules,
-      ...resourceRules
-      // {
-      //   path: '/role',
-      //   name: 'role',
-      //   component: () =>
-      //     import(/* webpackChunkName: 'role' */ '@/views/role/index.vue'),
-      //   meta: {
-      //     ptitle: '权限管理',
-      //     title: '角色管理'
-      //   }
-      // },
+      ...resourceRules,
+      ...roleRules
       // {
       //   path: '/course',
       //   name: 'course',
@@ -85,15 +77,6 @@ const routes: Array<RouteConfig> = [
       //     ptitle: '广告管理',
       //     title: '广告位列表'
       //   }
-      // },
-      // {
-      //   path: '/role/alloc-menu/:roleid',
-      //   name: 'alloc-menu',
-      //   props: true,
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'menu-create-or-edit' */ '@/views/role/alloc-menu.vue'
-      //     )
       // },
       // {
       //   path: '/course/add',

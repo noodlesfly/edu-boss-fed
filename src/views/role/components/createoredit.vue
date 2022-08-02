@@ -20,6 +20,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { getRoleById } from '@/services/role'
+import type { roleData } from '@/services/types/role'
 export default Vue.extend({
   name: 'create-or-edit-role',
   props: {
@@ -37,7 +38,7 @@ export default Vue.extend({
         code: '',
         name: '',
         description: ''
-      },
+      } as roleData,
       formLabelWidth: '120px'
     }
   },
@@ -48,13 +49,13 @@ export default Vue.extend({
   },
   methods: {
     async fetchRoleById () {
-      const { data } = await getRoleById(this.id)
-      if (data.code === '000000') {
-        const formdata = data.data
-        this.form.id = formdata.id
-        this.form.name = formdata.name
-        this.form.code = formdata.code
-        this.form.description = formdata.description
+      try {
+        const ret = await getRoleById(this.id) as roleData
+        this.form.name = ret.name
+        this.form.description = ret.description
+        this.form.code = ret.code
+      } catch (error) {
+
       }
     }
   }
