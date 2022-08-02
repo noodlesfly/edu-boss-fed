@@ -78,15 +78,15 @@ export default Vue.extend({
         onUploadstarted: async (uploadInfo: any) => {
           let uploadAdressAndAuth;
           if (uploadInfo.isImage) {
-            const { data } = await aliyunImagUploadAddressAdnAuth();
-            this.imageUrl = data.data.imageUrl;
-            uploadAdressAndAuth = data.data;
+            const ret = await aliyunImagUploadAddressAdnAuth() as any
+            this.imageUrl = ret.imageUrl;
+            uploadAdressAndAuth = ret;
           } else {
-            const { data } = await aliyunVideoUploadAddressAdnAuth({
+            const ret = await aliyunVideoUploadAddressAdnAuth({
               fileName: uploadInfo.file.name,
               imageUrl: this.imageUrl,
-            });
-            uploadAdressAndAuth = data.data;
+            }) as any
+            uploadAdressAndAuth = ret;
             this.videoId = uploadAdressAndAuth.videoId;
           }
 
@@ -117,18 +117,18 @@ export default Vue.extend({
         onUploadEnd: async (uploadInfo: any) => {
           (this.uploader as any).cleanList();
           this.percent = 0;
-          const { data } = await aliyunTransCode({
+          const ret= await aliyunTransCode({
             lessonId: this.$route.query.lessonId,
             coverImageUrl: this.imageUrl,
             fileId: this.videoId,
             fileName: (this.$refs as any)["videofile"].files[0].name,
           });
-          console.log("申请转码", data);
+          console.log("申请转码", ret);
           const timeId = setInterval(async () => {
-            const { data } = await aliyunTransCodePercent(
+            const res = await aliyunTransCodePercent(
               this.$route.query.lessonId
             );
-            if (data.data === 100) {
+            if (res === 100) {
               clearInterval(timeId);
               console.log("转码成功");
             }

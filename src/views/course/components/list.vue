@@ -11,7 +11,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="form.status" placeholder="请选择状态">
+            <el-select v-model="form.status" clearable placeholder="请选择状态">
               <el-option label="已上架" :value="1"> </el-option>
               <el-option label="未上架" :value="0"> </el-option>
             </el-select>
@@ -36,7 +36,7 @@
         <el-table-column prop="price" label="价格"> </el-table-column>
         <el-table-column prop="sortNum" label="排序"> </el-table-column>
         <el-table-column prop="status" label="状态">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-switch
               v-model="scope.row.status"
               active-color="#13ce66"
@@ -50,7 +50,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-button
               size="mini"
               type="text"
@@ -128,31 +128,36 @@ export default Vue.extend({
       this.loadCourses()
     },
     async loadCourses () {
-      this.isLoading = true
-      const { data } = await getQueryCourses(this.form)
-      if (data.code === '000000') {
-        data.data.records.forEach((course: any) => {
+      try {
+        this.isLoading = true
+        const { records, total } = await getQueryCourses(this.form) as any
+        records.forEach((course: any) => {
           course.isStateLoading = false
         })
-        this.courseList = data.data.records
+        this.courseList = records
+        this.totalNum = total
+      } catch (error) {
 
-        this.totalNum = data.data.total
+      } finally {
+        this.isLoading = false
       }
-      this.isLoading = false
     },
     handleCancel () {
       this.dialogVisible = false
     },
     async onStateChange (row: any) {
-      row.isStateLoading = true
-      const { data } = await changeState({
-        courseId: row.id,
-        status: row.status
-      })
-      if (data.code === '000000') {
+      try {
+        row.isStateLoading = true
+        await changeState({
+          courseId: row.id,
+          status: row.status
+        })
         this.$message.success('操作成功')
+      } catch (error) {
+
+      } finally {
+        row.isStateLoading = false
       }
-      row.isStateLoading = false
     }
   }
 })

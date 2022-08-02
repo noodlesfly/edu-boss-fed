@@ -45,10 +45,10 @@
       </div>
       <div v-show="activeStep === 1">
         <el-form-item label="课程封面">
-          <!-- <upload-img v-model="course.courseListImg"></upload-img> -->
+          <upload-img v-model="course.courseListImg"></upload-img>
         </el-form-item>
         <el-form-item label="介绍封面">
-          <!-- <upload-img v-model="course.courseImgUrl"></upload-img> -->
+          <upload-img v-model="course.courseImgUrl"></upload-img>
         </el-form-item>
       </div>
       <div v-show="activeStep === 2">
@@ -123,7 +123,7 @@
           <wang-editor v-model="course.courseDescriptionMarkDown"></wang-editor>
         </el-form-item>
         <el-form-item>
-          <!-- <el-button type="primary" @click="handleSave">保存</el-button> -->
+          <el-button type="primary" @click="handleSave">保存</el-button>
         </el-form-item>
       </div>
       <el-form-item v-if="activeStep < 4">
@@ -134,9 +134,9 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-// import UploadImg from '@/components/upload.vue'
-// import { saveOrUpdateCourse, getCourseById } from '@/services/course'
-// import WangEditor from '@/components/text-editor/index.vue'
+import UploadImg from '@/components/upload.vue'
+import { saveOrUpdateCourse, getCourseById } from '@/services/course'
+import WangEditor from '@/components/text-editor/index.vue'
 
 export default Vue.extend({
   name: 'add-update',
@@ -150,8 +150,8 @@ export default Vue.extend({
     }
   },
   components: {
-    // UploadImg
-    // WangEditor
+    UploadImg,
+    WangEditor
   },
   data () {
     return {
@@ -215,7 +215,7 @@ export default Vue.extend({
   },
   created () {
     if (this.isEdit) {
-      // this.loadCourse()
+      this.loadCourse()
     }
   },
   methods: {
@@ -224,21 +224,22 @@ export default Vue.extend({
       if (this.activeStep >= 5) {
         console.log(this.activeStep)
       }
+    },
+    async handleSave () {
+      try {
+        await saveOrUpdateCourse(this.course)
+        this.$router.push({
+          name: 'course'
+        })
+      } catch (error) {
+      }
+    },
+    async loadCourse () {
+      try {
+        this.course = await getCourseById(this.courseId) as any
+      } catch (error) {
+      }
     }
-    // async handleSave () {
-    //   const { data } = await saveOrUpdateCourse(this.course)
-    //   if (data.code === '000000') {
-    //     this.$router.push({
-    //       name: 'course'
-    //     })
-    //   }
-    // },
-    // async loadCourse () {
-    //   const { data } = await getCourseById(this.courseId)
-    //   if (data.code === '000000') {
-    //     this.course = data.data
-    //   }
-    // }
   }
 })
 </script>

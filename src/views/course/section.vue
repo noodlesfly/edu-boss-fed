@@ -4,54 +4,41 @@
       <div slot="header" class="clearfix">
         <span>内容列表</span>
       </div>
-      <!-- <el-tree
-        :data="sections"
-        :props="defaultProps"
-        draggable
-        :allow-drop="handleAllowDrop"
-        @node-drop="handleNodeDrop"
-      >
-        <template slot-scope="{ node, data }">
+      <el-tree :data="sections" :props="defaultProps" draggable :allow-drop="handleAllowDrop"
+        @node-drop="handleNodeDrop">
+        <template v-slot="{ node, data }">
           <div style="width: 100%">
             {{ node.label }}
-            <span class="nodebtn" v-if="data.sectionName">
+            <span class="nodebtn">
               <el-button type="plain">编辑</el-button>
-              <el-button type="primary">添加课时</el-button>
-              <el-button type="plain">隐藏</el-button>
-            </span>
-            <span class="nodebtn" v-else>
-              <el-button type="plain">编辑</el-button>
-              <el-button
-                type="primary"
-                @click="
-                  $router.push({
-                    name: 'course-video',
-                    params: {
-                      courseId: data.courseId,
-                    },
-                    query: {
-                      sectionId: node.parent.id,
-                      lessonId: data.id,
-                    },
-                  })
-                "
-                >上传视频</el-button
-              >
+              <el-button v-if="data.sectionName" type="primary">添加课时</el-button>
+              <el-button v-else type="primary" @click="
+                $router.push({
+                  name: 'course-video',
+                  params: {
+                    courseId: data.courseId,
+                  },
+                  query: {
+                    sectionId: node.parent.id,
+                    lessonId: data.id,
+                  },
+                })
+              ">上传视频</el-button>
               <el-button type="plain">隐藏</el-button>
             </span>
           </div>
         </template>
-      </el-tree> -->
+      </el-tree>
     </el-card>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-// import {
-//   getSectionAndLesson,
-//   saveOrUpdateSection,
-//   saveOrUpdateLesson
-// } from '@/services/course'
+import {
+  getSectionAndLesson,
+  saveOrUpdateSection,
+  saveOrUpdateLesson
+} from '@/services/course'
 export default Vue.extend({
   name: 'course-section',
   props: {
@@ -59,110 +46,54 @@ export default Vue.extend({
       type: [Number, String],
       required: true
     }
-  }
-  // created () {
-  //   this.loadSections()
-  // },
-  // data () {
-  //   return {
-  //     sections: [
-  //       {
-  //         label: '一级 1',
-  //         children: [
-  //           {
-  //             label: '二级 1-1',
-  //             children: [
-  //               {
-  //                 label: '三级 1-1-1'
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         label: '一级 2',
-  //         children: [
-  //           {
-  //             label: '二级 2-1',
-  //             children: [
-  //               {
-  //                 label: '三级 2-1-1'
-  //               }
-  //             ]
-  //           },
-  //           {
-  //             label: '二级 2-2',
-  //             children: [
-  //               {
-  //                 label: '三级 2-2-1'
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         label: '一级 3',
-  //         children: [
-  //           {
-  //             label: '二级 3-1',
-  //             children: [
-  //               {
-  //                 label: '三级 3-1-1'
-  //               }
-  //             ]
-  //           },
-  //           {
-  //             label: '二级 3-2',
-  //             children: [
-  //               {
-  //                 label: '三级 3-2-1'
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     ],
-  //     defaultProps: {
-  //       children: 'lessonDTOS',
-  //       label (data: any) {
-  //         return data.sectionName || data.theme
-  //       }
-  //     }
-  //   }
-  // },
-  // methods: {
-  //   async loadSections () {
-  //     const { data } = await getSectionAndLesson(this.courseId)
-  //     if (data.code === '000000') {
-  //       this.sections = data.data
-  //     }
-  //   },
-  //   handleAllowDrop (draggingNode: any, dropNode: any, type: any) {
-  //     return (
-  //       draggingNode.data.sectionId === dropNode.data.sectionId &&
-  //       type !== 'inner'
-  //     )
-  //   },
-  //   handleNodeDrop (dragnode: any, dropnode: any, type: any, event: any) {
-  //     const promises = dropnode.parent.childNodes.map((item: any, index: any) => {
-  //       if (dragnode.data.sectionName) {
-  //         return saveOrUpdateSection({
-  //           id: item.data.id,
-  //           orderNum: index + 1
-  //         })
-  //       } else {
-  //         return saveOrUpdateLesson({
-  //           id: item.data.id,
-  //           orderNum: index + 1
-  //         })
-  //       }
-  //     })
+  },
+  created () {
+    this.loadSections()
+  },
+  data () {
+    return {
+      sections: [],
+      defaultProps: {
+        children: 'lessonDTOS',
+        label (data: any) {
+          return data.sectionName || data.theme
+        }
+      }
+    }
+  },
+  methods: {
+    async loadSections () {
+      try {
+        this.sections = await getSectionAndLesson(this.courseId) as any
+      } catch (error) {
 
-  //     Promise.all(promises).then((res) => {
-  //       this.$message.success('处理成功')
-  //     })
-  //   }
-  // }
+      }
+    },
+    handleAllowDrop (draggingNode: any, dropNode: any, type: any) {
+      return (
+        draggingNode.data.sectionId === dropNode.data.sectionId &&
+        type !== 'inner'
+      )
+    },
+    async handleNodeDrop (dragnode: any, dropnode: any) {
+      const promises = dropnode.parent.childNodes.map((item: any, index: any) => {
+        if (dragnode.data.sectionName) {
+          return saveOrUpdateSection({
+            id: item.data.id,
+            orderNum: index + 1
+          })
+        } else {
+          return saveOrUpdateLesson({
+            id: item.data.id,
+            orderNum: index + 1
+          })
+        }
+      })
+
+      await Promise.all(promises)
+      this.$message.success('处理成功')
+    }
+  }
 })
 </script>
 <style lang="scss" scoped>

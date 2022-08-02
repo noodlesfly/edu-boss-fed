@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from 'vue-router'
 import menuRules from './modules/menu'
 import resourceRules from './modules/resource'
 import roleRules from './modules/role'
+import courseRules from './modules/course'
 import nprogress from 'nprogress'
 import Layout from '@/layout/index.vue'
 import { useUserStore } from '@/store/user'
@@ -35,17 +36,8 @@ const routes: Array<RouteConfig> = [
       },
       ...menuRules,
       ...resourceRules,
-      ...roleRules
-      // {
-      //   path: '/course',
-      //   name: 'course',
-      //   component: () =>
-      //     import(/* webpackChunkName: 'course' */ '@/views/course/index.vue'),
-      //   meta: {
-      //     ptitle: '',
-      //     title: '课程管理'
-      //   }
-      // },
+      ...roleRules,
+      ...courseRules
       // {
       //   path: '/user',
       //   name: 'user',
@@ -78,37 +70,6 @@ const routes: Array<RouteConfig> = [
       //     title: '广告位列表'
       //   }
       // },
-      // {
-      //   path: '/course/add',
-      //   name: 'course-add',
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'course' */ '@/views/course/components/add.vue'
-      //     )
-      // },
-      // {
-      //   path: '/course/update/:courseId',
-      //   name: 'course-update',
-      //   props: true,
-      //   component: () =>
-      //     import(
-      //       /* webpackChunkName: 'course' */ '@/views/course/components/update.vue'
-      //     )
-      // },
-      // {
-      //   path: '/course/section/:courseId',
-      //   name: 'course-section',
-      //   props: true,
-      //   component: () =>
-      //     import(/* webpackChunkName: 'course' */ '@/views/course/section.vue')
-      // },
-      // {
-      //   path: '/course/video/:courseId',
-      //   name: 'course-video',
-      //   props: true,
-      //   component: () =>
-      //     import(/* webpackChunkName: 'course' */ '@/views/course/video.vue')
-      // }
     ]
   },
   {
